@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Todo</title>
+    <script src="https://kit.fontawesome.com/894570c63d.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="/static/css/list.css">
+</head>
+<body>
+<div class="modal">
+<div class="lds-ripple">
+        <div></div>
+        <div></div>
+    </div>
+</div>
+
+    <div class="wrapper">
+    <h3 id="errorspan"></h3>
+        <div class="container">
+            <header>Lists<button id="addNewList"><i class="fas fa-plus"></i></button></header>
+            <ul class="todoList">
+                {% for list in data %}
+                    <li id="list_{{ list.id }}">
+                        <a href="/list/{{ list.id }}"
+                        {% if list.id == active_id %}
+                            class="active"
+                        {% endif %}
+                        >{{ list.name }}</a>
+                        <span class="icon" onclick="deleteTask({{ list.id }}, 'list')"><i class="fas fa-trash"></i></span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+<div id="todosContainer" class="container">
+
+    <header>Todos
+    <button id="newTodoItem"><i class="fas fa-plus"></i></button>
+    </header>
+
+    <div class="inputField">
+        <input type="text" placeholder="Search..."/>
+    </div>
+    <ul class="todoList" id="{{ active_id }}">
+        {% set count = namespace(value=todos|length) %}
+        {% for todo in todos %}
+            <li id="todo_{{ todo.id }}">
+            <label for="checkbox_{{todo.id}}">
+                <input onclick="checkUpdate(this)" id="checkbox_{{todo.id}}" data-id="{{ todo.id }}" type="checkbox"
+                {% if todo.completed %}
+                       {% set count.value = count.value - 1 %}
+                    checked
+                {% endif %}
+                />
+                {{ todo.description }}
+                <span class="icon" onclick="deleteTask({{ todo.id }}, 'todo')"><i class="fas fa-trash"></i></span>
+            </label>
+            </li>
+        {% endfor %}
+
+    </ul>
+    <div class="footer">
+        <span>You have <span class="pendingTasks">{{ count.value }}</span> pending tasks</span>
+    </div>
+</div>
+
+
+</div>
+
+<script src="/static/js/list.js"></script>
+</body>
+</html>
