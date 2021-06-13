@@ -71,12 +71,12 @@ function addNewLiItem() {
             data => {
                 let newLiTag = document.createElement('li');
                 newLiTag.id = "todo_" + data.id;
-                newLiTag.innerHTML = `<label for="checkbox_${data.id}">
-            <input onclick="checkUpdate(this)" id="checkbox_${data.id}" data-id="${data.id}" type="checkbox"/>
-            ${userEnteredValue}
-            <span class="icon" onclick="deleteTask(${data.id}, 'todo')">
-            <i class="fas fa-trash"></i>
-            </span></label>`;
+                newLiTag.innerHTML = `
+            <label for="checkbox_${data.id}">
+                <input onclick="checkUpdate(this)" id="checkbox_${data.id}" data-id="${data.id}" type="checkbox"/>
+                    ${userEnteredValue}
+           </label>
+            <span class="icon" onclick="deleteTask(${data.id}, 'todo')"><i class="fas fa-trash"></i></span>`;
                 const pendingTasksNumb = document.querySelector(".pendingTasks");
                 pendingTasksNumb.textContent = (parseInt(pendingTasksNumb.textContent) + 1).toString();
                 todoList.appendChild(newLiTag);
@@ -90,6 +90,38 @@ function addNewLiItem() {
     }
 }
 
+function checkUpdate(e) {
+    const newState = e.checked;
+    toggleLoader();
+    fetch('/todos/update', {
+        method: 'put',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            "id": e.dataset.id,
+            "completed": newState
+        }),
+    }).then(response => response.json()).then(response => {
+        if (response.success) {
+            errSpan.innerHTML = "";
+            const pendingTasksNumb = document.querySelector(".pendingTasks");
+            let newValue;
+            if (newState)
+                newValue = -1;
+            else
+                newValue = 1;
+            pendingTasksNumb.textContent = (parseInt(pendingTasksNumb.textContent) + newValue).toString();
+        } else {
+            errSpan.innerHTML = "Unknown error.";
+            e.checked = !newState;
+        }
+    }).catch(err => {
+        console.log(err);
+        errSpan.innerHTML = "Unknown error.";
+        e.checked = !newState;
+    }).finally(toggleLoader);
+}
 
 function deleteTask(index, whattodelete) {
     toggleLoader();
@@ -130,32 +162,3 @@ function toggleLoader() {
     loaderStatus = !loaderStatus;
 }
 
-function checkUpdate(e) {
-    const newState = e.checked;
-    const pendingTasksNumb = document.querySelector(".pendingTasks");
-    let newValue;
-    console.log();
-    if (newState)
-        newValue = -1;
-    else
-        newValue = 1;
-    pendingTasksNumb.textContent = (parseInt(pendingTasksNumb.textContent) + newValue).toString();
-    fetch('/todos/update', {
-        method: 'put',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            "id": e.dataset.id,
-            "completed": newState
-        }),
-    }).then(response => response.json()).then(response => {
-        if (response.success)
-            errSpan.innerHTML = "";
-        else
-            errSpan.innerHTML = "Unknown error.";
-    }).catch(err => {
-        console.log(err);
-        errSpan.innerHTML = "Unknown error.";
-    });
-}
