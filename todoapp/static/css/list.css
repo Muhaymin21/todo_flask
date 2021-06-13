@@ -47,6 +47,21 @@ h3 {
     grid-row-gap: 1%;
 }
 
+@media only screen and (max-width: 400px) {
+    body {
+        height: auto;
+    }
+    .wrapper {
+        margin: 20px auto;
+        grid-row-gap: 1%;
+    }
+    .container {
+        grid-column: span 2;
+        padding: 10px;
+        margin: 10px 0;
+    }
+}
+
 .wrapper header {
     font-size: 30px;
     display: flex;
