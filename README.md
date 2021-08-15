@@ -10,9 +10,8 @@ To start with this project:
 
  3. Install requirements:
  
- `pip install -r requirements.txt`
+	`pip install -r requirements.txt`
  
  4. Run the app:
  
-`Python app.py`
-
+	`Python app.py`
